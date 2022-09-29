@@ -81,7 +81,7 @@ mongoose
 // });
 
 // production
-let server = app.listen(4000, () => {
+app.listen(process.env.Port || 4000, () => {
   let port = server.address().port;
   console.log("whats my port ?", port);
 });
