@@ -107,6 +107,7 @@ const postItem = async (req, res) => {
     return res.status(400).json("Image must be uploaded");
   }
 
+  const expiredAt = parseInt(req.body.expiredAt) || 0;
   if (req.files) {
     req.files.map((image) => {
       return imagesPaths.push(
@@ -128,7 +129,7 @@ const postItem = async (req, res) => {
     item_pics: imagesPaths,
     desc: req.body.desc,
     is_free: req.body.is_free,
-    expired_date: req.body.expiredAt,
+    expired_date: expiredAt,
   });
   console.log(itemCreated);
 
