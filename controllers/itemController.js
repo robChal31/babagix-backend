@@ -130,6 +130,7 @@ const postItem = async (req, res) => {
     is_free: req.body.is_free,
     expired_date: req.body.expiredAt,
   });
+  console.log(itemCreated);
 
   itemCreated
     .save()
@@ -137,7 +138,7 @@ const postItem = async (req, res) => {
       return res.status(200).json(data);
     })
     .catch((err) => {
-      return res.status(500).json(err.message);
+      return res.status(500).json(err);
     });
 };
 
