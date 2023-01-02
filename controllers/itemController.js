@@ -111,7 +111,7 @@ const postItem = async (req, res) => {
   if (req.files) {
     req.files.map((image) => {
       return imagesPaths.push(
-        `${req.protocol}://babagix-server.herokuapp.com/public/upload/${image.filename}`
+        `https://babagix-server.herokuapp.com/public/upload/${image.filename}`
       );
     });
   }
