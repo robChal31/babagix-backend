@@ -5,8 +5,11 @@
   "main": "app.js",
   "author": "nanu",
   "license": "MIT",
+  "engines": {
+    "node": "14.x"
+  },
   "scripts": {
-    "start": "nodemon app.js"
+    "start": "node index.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
