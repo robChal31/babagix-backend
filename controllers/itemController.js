@@ -1,10 +1,10 @@
-const mongoose = require("mongoose");
-const { Category } = require("../models/category");
-const { Item } = require("../models/item");
-const fs = require("fs");
-const path = require("path");
-const { User } = require("../models/user");
-const { Message } = require("../models/message");
+const mongoose = require('mongoose');
+const { Category } = require('../models/category');
+const { Item } = require('../models/item');
+const fs = require('fs');
+const path = require('path');
+const { User } = require('../models/user');
+const { Message } = require('../models/message');
 
 const getItem = async (req, res) => {
   let filter = {};
@@ -18,10 +18,10 @@ const getItem = async (req, res) => {
     }
   }
   if (!isFree && req.query.category) {
-    filter = { category: req.query.category.split(",") };
+    filter = { category: req.query.category.split(',') };
   }
   if (isFree && req.query.category) {
-    filter = { is_free: isFree, category: req.query.category.split(",") };
+    filter = { is_free: isFree, category: req.query.category.split(',') };
   }
 
   const itemList = await Item.find({
@@ -37,12 +37,12 @@ const getItem = async (req, res) => {
     //   },
     // },
   })
-    .populate("category")
-    .populate({ path: "user", select: ["_id", "username", "avatar"] })
+    .populate('category')
+    .populate({ path: 'user', select: ['_id', 'username', 'avatar'] })
     .sort({ updatedAt: -1 });
   if (!itemList) {
     return res.status(500).json({
-      message: "something went wrong",
+      message: 'something went wrong',
       status: false,
     });
   }
@@ -54,12 +54,12 @@ const getItem = async (req, res) => {
 
 const getItemById = async (req, res) => {
   const itemList = await Item.findById(req.params.id)
-    .populate("category")
-    .populate({ path: "user", select: "username avatar" });
+    .populate('category')
+    .populate({ path: 'user', select: 'username avatar' });
 
   if (!itemList) {
     return res.status(500).json({
-      message: "something went wrong",
+      message: 'something went wrong',
       status: false,
     });
   }
@@ -69,13 +69,13 @@ const getItemById = async (req, res) => {
 
 const getItemProfile = async (req, res) => {
   const itemList = await Item.find({ user: req.params.id }).populate({
-    path: "user",
-    select: ["_id", "username", "avatar"],
+    path: 'user',
+    select: ['_id', 'username', 'avatar'],
   });
 
   if (!itemList) {
     return res.status(500).json({
-      message: "something went wrong",
+      message: 'something went wrong',
       status: false,
     });
   }
@@ -86,9 +86,9 @@ const getItemProfile = async (req, res) => {
 };
 
 const getItemByUserId = async (req, res) => {
-  const itemList = await Item.find({ user: req.params.id }).populate("user");
+  const itemList = await Item.find({ user: req.params.id }).populate('user');
   if (!itemList.length) {
-    return res.status(400).json("data tidak ada");
+    return res.status(400).json('data tidak ada');
   }
   res.status(200).json(itemList);
 };
@@ -97,21 +97,21 @@ const postItem = async (req, res) => {
   const category = await Category.findById(req.body.category_id);
   if (!category)
     return res.status(500).json({
-      message: "Invalid Category",
+      message: 'Invalid Category',
       status: false,
     });
 
   let imagesPaths = [];
 
   if (!req.files) {
-    return res.status(400).json("Image must be uploaded");
+    return res.status(400).json('Image must be uploaded');
   }
 
   const expiredAt = parseInt(req.body.expiredAt) || 0;
   if (req.files) {
     req.files.map((image) => {
       return imagesPaths.push(
-        `https://babagix-server.herokuapp.com/public/upload/${image.filename}`
+        `https://babagix-backend.vercel.app/public/upload/${image.filename}`
       );
     });
   }
@@ -120,7 +120,7 @@ const postItem = async (req, res) => {
     user: req.body.user_id,
     category: req.body.category_id,
     location: {
-      type: "Point",
+      type: 'Point',
       coordinates: [
         parseFloat(req.body.longitude),
         parseFloat(req.body.latitude),
@@ -148,7 +148,7 @@ const editItem = async (req, res) => {
   //id check
   if (!mongoose.isValidObjectId(req.params.id)) {
     res.status(500).json({
-      message: "Invalid item id",
+      message: 'Invalid item id',
       status: false,
     });
   }
@@ -157,20 +157,20 @@ const editItem = async (req, res) => {
   const category = await Category.findById(req.body.category_id);
   if (!category)
     return res.status(500).json({
-      message: "Invalid Category",
+      message: 'Invalid Category',
       status: false,
     });
 
   let imagesPaths = [];
 
   if (!req.files) {
-    return res.status(400).json("Image must be uploaded");
+    return res.status(400).json('Image must be uploaded');
   }
 
   if (req.files) {
     req.files.map((image) => {
       return imagesPaths.push(
-        `${req.protocol}://10.0.2.2:4000/public/upload/${image.filename}`
+        `https://babagix-backend.vercel.app/public/upload/${image.filename}`
       );
     });
   }
@@ -182,7 +182,7 @@ const editItem = async (req, res) => {
       user: req.body.user_id,
       category: req.body.category_id,
       location: {
-        type: "Point",
+        type: 'Point',
         coordinates: [
           parseFloat(req.body.longitude),
           parseFloat(req.body.latitude),
@@ -200,19 +200,19 @@ const editItem = async (req, res) => {
     return res.status(200).json(updateItem);
   }
   if (!updateItem) {
-    return res.status(500).json("gagal update");
+    return res.status(500).json('gagal update');
   }
 };
 
 const deleteItem = async (req, res) => {
   if (!mongoose.isValidObjectId(req.params.id))
-    res.status(500).send("Invalid id");
+    res.status(500).send('Invalid id');
   const item = await Item.findById(req.params.id);
   if (item) {
     const itemId = item._id;
     if (item.user.toString() === req.body.userId) {
       const findMsg = await Message.find({ item: itemId })
-        .select("room_name")
+        .select('room_name')
         .lean();
       try {
         const delMsgs = await Message.deleteMany({ item: itemId });
@@ -225,19 +225,19 @@ const deleteItem = async (req, res) => {
         { messages: { $in: msgs } },
         { $pull: { messages: { $in: msgs } } }
       );
-      return res.status(200).json("item deleted");
+      return res.status(200).json('item deleted');
     }
   }
 
-  return res.status(500).json("Failed to delete");
+  return res.status(500).json('Failed to delete');
 };
 
 const getSavedItem = async (req, res) => {
   const { userId } = req.query;
-  const checkIsSaved = await User.findById(userId).select("itemSaved").lean();
+  const checkIsSaved = await User.findById(userId).select('itemSaved').lean();
   const savedItem = await Item.find({
     _id: { $in: checkIsSaved.itemSaved },
-  }).populate("user");
+  }).populate('user');
   if (savedItem) {
     return res.status(200).json(savedItem);
   }
@@ -248,7 +248,7 @@ const getSavedItem = async (req, res) => {
 
 const getOneSaved = async (req, res) => {
   const { userId, itemId } = req.query;
-  let checkIsSaved = await User.findById(userId).select("itemSaved").lean();
+  let checkIsSaved = await User.findById(userId).select('itemSaved').lean();
   checkIsSaved = checkIsSaved.itemSaved.filter((e) => e == itemId);
 
   // const test = checkIsSaved.$where('itemSaved' : itemId)
@@ -266,13 +266,13 @@ const addSaved = async (req, res) => {
     userId,
     { $push: { itemSaved: itemId } },
     { new: true }
-  ).select("itemSaved");
+  ).select('itemSaved');
   user = user.itemSaved.filter((e) => e == itemId);
   if (user) {
     return res.status(200).json(user);
   }
   if (!user) {
-    return res.status(500).json("failed to add");
+    return res.status(500).json('failed to add');
   }
 };
 
@@ -282,7 +282,7 @@ const removeSaved = async (req, res) => {
     userId,
     { $pull: { itemSaved: savedId } },
     { new: true }
-  ).select("itemSaved");
+  ).select('itemSaved');
   pullSaved = pullSaved.itemSaved.filter((e) => e == savedId);
   if (pullSaved) {
     return res.status(200).json(pullSaved);
@@ -291,7 +291,7 @@ const removeSaved = async (req, res) => {
 
 const isLoved = async (req, res) => {
   const { userId, itemId } = req.query;
-  let checkIsLoved = await Item.findById(itemId).select("loved");
+  let checkIsLoved = await Item.findById(itemId).select('loved');
   const isLoved = checkIsLoved.loved.filter((e) => e == userId);
   if (checkIsLoved) {
     return res
@@ -310,7 +310,7 @@ const removeLoved = async (req, res) => {
     itemId,
     { $pull: { loved: userId } },
     { new: true }
-  ).select("loved");
+  ).select('loved');
 
   const rmLoved = pullLoved.loved.filter((e) => e == userId);
   if (pullLoved) {
@@ -326,7 +326,7 @@ const addLoved = async (req, res) => {
     itemId,
     { $push: { loved: userId } },
     { new: true }
-  ).select("loved");
+  ).select('loved');
   const addToLoved = pushLoved.loved.filter((e) => e == userId);
   if (pushLoved) {
     return res
@@ -337,8 +337,8 @@ const addLoved = async (req, res) => {
 
 const searchItem = async (req, res) => {
   const findItem = await Item.find({
-    item_name: new RegExp(req.query.itemName, "i"),
-  }).populate({ path: "user", select: "username avatar" });
+    item_name: new RegExp(req.query.itemName, 'i'),
+  }).populate({ path: 'user', select: 'username avatar' });
   return res.status(200).json(findItem);
 };
 
