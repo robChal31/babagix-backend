@@ -140,7 +140,10 @@ const postItem = async (req, res) => {
     })
     .catch((err) => {
       console.log(err);
-      return res.status(500).json(err);
+      return res.status(500).json({
+        err,
+        msgErr: 'From Here',
+      });
     });
 };
 
